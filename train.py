@@ -4,28 +4,69 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 import joblib
 
-# 1. Load data
+
+# โหลดข้อมูล
 df = pd.read_csv("loan_data.csv")
 
-# 2. Select features & target
-X = df[["person_age", "person_income", "loan_amnt"]]
+
+# ใช้แค่ 3 feature
+X = df[
+    [
+        "person_age",
+        "person_income",
+        "loan_amnt"
+    ]
+]
+
 y = df["loan_status"]
 
-# 3. Split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-# 4. Scaling
+# แบ่งข้อมูล
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+
+# Scaling
 scaler = StandardScaler()
+
 X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
 
-# 5. Train SVM model
+
+# Train SVM
 model = SVC()
-model.fit(X_train, y_train)
 
-# 6. Save model
-joblib.dump(model, "svm_model.pkl")
-joblib.dump(scaler, "scaler.pkl")
-joblib.dump(X.columns.tolist(), "columns.pkl")
+model.fit(
+    X_train,
+    y_train
+)
 
-print("Model trained and saved!")
+
+# save model
+
+joblib.dump(
+    model,
+    "svm_model.pkl"
+)
+
+joblib.dump(
+    scaler,
+    "scaler.pkl"
+)
+
+
+# save columns
+joblib.dump(
+    [
+        "person_age",
+        "person_income",
+        "loan_amnt"
+    ],
+    "columns.pkl"
+)
+
+
+print("สร้างโมเดลสำเร็จ")

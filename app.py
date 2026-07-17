@@ -2,53 +2,154 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+
+# =========================
 # โหลดโมเดล
+# =========================
+
 model = joblib.load("svm_model.pkl")
 scaler = joblib.load("scaler.pkl")
-columns = joblib.load("columns.pkl")
 
-# ตั้งค่าเว็บ
-st.set_page_config(page_title="Loan Prediction", layout="centered")
 
-# HEADER
-st.markdown("<h1 style='text-align: center;'>🏦 Loan Approval Prediction</h1>", unsafe_allow_html=True)
-st.markdown("---")
+# =========================
+# ตั้งค่าหน้าเว็บ
+# =========================
 
-# INPUT SECTION
-st.subheader("📋 Enter Customer Information")
+st.set_page_config(
+    page_title="ระบบทำนายอนุมัติสินเชื่อ",
+    page_icon="🏦",
+    layout="centered"
+)
 
-col1, col2 = st.columns(2)
 
-with col1:
-    age = st.number_input("👤 Age", 18, 100, 25)
-    income = st.number_input("💰 Income", 1000, 1000000, 30000)
+# =========================
+# CSS ตกแต่งเว็บ
+# =========================
 
-with col2:
-    loan = st.number_input("🏦 Loan Amount", 500, 100000, 10000)
+st.markdown(
+    """
+    <style>
 
-st.markdown("---")
+    .main {
+        background-color: #f5f7fb;
+    }
 
-# BUTTON
-if st.button("🔍 Predict", use_container_width=True):
+    .title {
+        text-align:center;
+        color:#1f4e79;
+        font-size:35px;
+        font-weight:bold;
+    }
+
+    .box {
+        background:white;
+        padding:20px;
+        border-radius:15px;
+        box-shadow:0px 0px 10px #cccccc;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+# =========================
+# หัวเว็บ
+# =========================
+
+st.markdown(
+    '<div class="title">🏦 ระบบทำนายการอนุมัติสินเชื่อด้วย AI</div>',
+    unsafe_allow_html=True
+)
+
+
+st.write(
+    "กรอกข้อมูลเพื่อให้โมเดล SVM วิเคราะห์โอกาสการอนุมัติสินเชื่อ"
+)
+
+
+st.divider()
+
+
+
+# =========================
+# รับข้อมูล
+# =========================
+
+
+age = st.slider(
+    "👤 อายุ",
+    min_value=18,
+    max_value=100,
+    value=25
+)
+
+
+income = st.number_input(
+    "💰 รายได้ต่อปี",
+    min_value=1000,
+    max_value=1000000,
+    value=30000
+)
+
+
+loan = st.number_input(
+    "💳 จำนวนเงินกู้",
+    min_value=500,
+    max_value=1000000,
+    value=10000
+)
+
+
+
+st.divider()
+
+
+
+# =========================
+# ทำนายผล
+# =========================
+
+
+if st.button("🔍 ทำนายผล"):
+
+
+    # สร้าง DataFrame ให้ตรงกับตอน Train
 
     data = pd.DataFrame(
-        [[age, income, loan]],
-        columns=["person_age", "person_income", "loan_amnt"]
+        {
+            "person_age": [age],
+            "person_income": [income],
+            "loan_amnt": [loan]
+        }
     )
 
-    data = pd.get_dummies(data)
-    data = data.reindex(columns=columns, fill_value=0)
+
+    # Scaling
+
     data_scaled = scaler.transform(data)
+
+
+
+    # Predict
 
     result = model.predict(data_scaled)
 
-    st.markdown("### 📊 Result")
+
+
+    st.subheader("📌 ผลการวิเคราะห์")
+
 
     if result[0] == 1:
-        st.success("✅ Loan Approved")
-    else:
-        st.error("❌ Loan Not Approved")
 
-# FOOTER
-st.markdown("---")
-st.caption("Developed using SVM & Streamlit")
+        st.success(
+            "✅ มีโอกาสได้รับการอนุมัติสินเชื่อ"
+        )
+
+    else:
+
+        st.error(
+            "❌ มีโอกาสไม่ได้รับการอนุมัติสินเชื่อ"
+        )
