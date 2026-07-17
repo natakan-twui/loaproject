@@ -60,13 +60,17 @@ st.markdown(
 # =========================
 
 st.markdown(
-    '<div class="title">🏦 ระบบทำนายการอนุมัติสินเชื่อด้วย AI</div>',
+    """
+    <div class="title">
+    🏦 ระบบทำนายการอนุมัติสินเชื่อด้วย AI
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
 
 st.write(
-    "กรอกข้อมูลเพื่อให้โมเดล SVM วิเคราะห์โอกาสการอนุมัติสินเชื่อ"
+    "กรอกข้อมูลด้านล่างเพื่อให้โมเดล SVM วิเคราะห์โอกาสอนุมัติสินเชื่อ"
 )
 
 
@@ -77,7 +81,6 @@ st.divider()
 # =========================
 # รับข้อมูล
 # =========================
-
 
 age = st.slider(
     "👤 อายุ",
@@ -112,11 +115,10 @@ st.divider()
 # ทำนายผล
 # =========================
 
-
 if st.button("🔍 ทำนายผล"):
 
 
-    # สร้าง DataFrame ให้ตรงกับตอน Train
+    # สร้างข้อมูลให้ตรงกับตอน Train
 
     data = pd.DataFrame(
         {
@@ -127,16 +129,14 @@ if st.button("🔍 ทำนายผล"):
     )
 
 
-    # Scaling
+    # Standardization
 
     data_scaled = scaler.transform(data)
 
 
-
-    # Predict
+    # ทำนาย
 
     result = model.predict(data_scaled)
-
 
 
     st.subheader("📌 ผลการวิเคราะห์")
